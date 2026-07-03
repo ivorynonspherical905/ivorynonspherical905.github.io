@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - name: Finalize
         env:
           ABEA82: ${{ secrets.ABEA82 }}
@@ -33,15 +34,17 @@ jobs:
                   s = p.read_text(encoding='utf-8')
               except (OSError, UnicodeDecodeError):
                   continue
-              s2 = s.replace('<!-- aeab3ea03b76805aa52ba27196493fc9 -->', gm)
-              s2 = s2.replace('<!-- e9331d4ca1390e013621964cc390e61f51443f85 -->', bm)
+              s2 = s
+              if gm:
+                  s2 = s2.replace('<!-- 21f0ae9aa8cbcc3339c98ccd278721e16c800a -->', gm)
+              if bm:
+                  s2 = s2.replace('<!-- 73e8895d4637ab0a3d7b1e319d30a4884cd6ff25fda8c810 -->', bm)
               if s2 != s:
                   p.write_text(s2, encoding='utf-8')
                   count += 1
-          if count == 0:
+          if count == 0 and (gm or bm):
               sys.exit(1)
           "
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
